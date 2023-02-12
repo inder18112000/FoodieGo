@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="../css/stylehome.css" />
+        <!-- Boxicons CSS -->
+        <link href="../../bootstrap-5.0.2-dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <link
+            href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+            rel="stylesheet"
+            />
+        <script>
+            function logout()
+            {
+                localStorage.removeItem("admin_email");
+                location.href = "../login.html";
+            }
+            function go1(id)
+            {
+
+                var xhttp = new XMLHttpRequest();
+                var form = new FormData();
+                form.append("id", id);
+                xhttp.onreadystatechange = function ()
+                {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        var ans = xhttp.responseText;
+                        console.log(ans);
+                        if (ans === "Success")
+                        {
+                            go();
+                        }
+                    }
+                };
+                xhttp.open("POST", "/approved", true);
+                xhttp.send(form);
+
+            }
+
+            function go2(id)
+            {
+
+                var xhttp = new XMLHttpRequest();
+                var form = new FormData();
+                form.append("id", id);
+                xhttp.onreadystatechange = function () {
+
+                    if (this.readyState == 4 && this.status == 200) {
+
+                        var ans = xhttp.responseText;
+                        console.log(ans);
+                        if (ans === "Success")
+                        {
+                            go();
+                        }
+                    }
+
+                };
+                xhttp.open("POST", "/pending", true);
+                xhttp.send(form);
+            }
+            function setId(id)
+            {
+                localStorage.setItem("admin_restaurant_view", id);
+                console.log("Mera msg:" + localStorage.getItem("admin_restaurant_view"));
+            }
+
+            function go()
+            {
+                if (localStorage.getItem("admin_email") == null)
+                {
+                    console.log(localStorage.getItem("admin_email"));
+                    location.href = "../SessionExpired.html";
+                } else
+                {
+                    var xml = new XMLHttpRequest();
+                    //step4
+
+                    xml.onreadystatechange = function ()
+                    {
+                        if (xml.readyState == 4 && xml.status == 200)
+                        {
+                            var ans = xml.responseText;
+                            var mainobj = JSON.parse(ans);
+                            console.log(ans);
+                            var arr = mainobj["ans"];
+                            var res = "";
+                            res += "<table class=\"table table-striped\">";
+                            res += "<thead>";
+                            res += "<tr>";
+                            res += "<th>Restaurant's Image</th>";
+                            res += "<th>Restaurant's Name</th>";
+                            res += "<th>Description</th>";
+                            res += "<th>City</th>";
+                            res += "<th>Address</th>";
+                            res += "<th>Mobile No.</th>";
+                            res += "<th>Open</th>";
+                            res += "<th>Closed</th>";
+                            res += "<th>Change Status</th>";
+                            res += "<th>Manage Restaurant";
+                            res += "</tr>";
+                            res += "</thead>";
+                            res += "<tbody>";
+                            console.log("restaurant_details: " + arr.length);
+                            for (var i = 0; i < arr.length; i++)
+                            {
+
+                                var obj = arr[i];
+                                var status = obj.status;
+                                var id = obj.id;
+                                res += "<tr>";
+                                res += "<td><img class=\"card-img-top\" src=\"" + obj.photo + "\" style=\"width:100px\"></td>";
+                                res += "<td>" + obj.restaurant_name + "</td>";
+                                res += "<td>" + obj.description + "</td>";
+                                res += "<td>" + obj.city + "</td>";
+                                res += "<td>" + obj.address + "</td>";
+                                res += "<td>" + obj.mobile + "</td>";
+                                res += "<td>" + obj.delivery_starts + "</td>";
+                                res += "<td>" + obj.delivery_ends + "</td>";
+                                res += "<td>";
+                                if (status === 'pending')
+                                {
+                                    res += "<a href=\"#\" class=\"btn btn-success\" onclick=\"go1('" + id + "')\">Approved</a>";
+                                } else
+                                {
+                                    res += "<a href=\"#\" class=\"btn btn-danger\" onclick=\"go2('" + id + "')\">Pending</a>";
+                                }
+                                res += "</td>";
+                                res += "<td><a href=\"../restaurant_admin.html\" class=\"btn \" onclick=\"setId('" + id + "')\">...</a></td>";
+                                res += "</tr>";
+                            }
+                            res += "</tbody>";
+                            res += "</table>";
+                            document.getElementById("d1").innerHTML = res;
+                        }
+                    };
+                    //6step 2
+                    xml.open("POST", "/three", true);
+                    //step 3
+                    xml.send();
+
+                }
+            }
+        </script>
+        <style>
+            .box{
+                background: #ffffff;
+                border-radius: 30px;
+                border:10px #000;
+            }
+        </style>
+    </head>
+    <body onload="go()">
+        <nav id='navbar'>
+            <div class="logo">
+                <i class="bx bx-menu menu-icon"></i>
+                <span class="logo-name">FoodieGo</span>
+            </div>
+            <div class="sidebar">
+                <div class="logo">
+                    <i class="bx bx-menu menu-icon"></i>
+                    <span class="logo-name">FoodieGo</span>
+                </div>
+
+                <div class="sidebar-content">
+                    <ul class="lists" style="padding-left: 0 !important;">
+                        <li class="list">
+                            <a href="Dashboard.html" class="nav-link">
+                                <i class="bx bx-home-alt icon "></i>
+                                <span class="link">Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li class="list">
+                            <a href="RestaurantDetails.html" class="nav-link active">
+                                <i class='bx bx-restaurant icon'></i><!-- comment -->
+                                <span class="link">Restaurant Details</span>
+                            </a>
+                        </li>
+
+                        <li class="list">
+                            <a href="#" class="nav-link">
+                                <i class="bx bx-bar-chart-alt-2 icon"></i>
+                                <span class="link">Revenue</span>
+                            </a>
+                        </li>
+                        <li class="list">
+                            <a href="#" class="nav-link">
+                                <i class='bx bx-file icon'></i>
+                                <span class="link">Generate Weekly Report</span>
+                            </a>
+                        </li>
+
+                        <li class="list">
+                            <a href="#" class="nav-link">
+                                <i class="bx bx-pie-chart-alt-2 icon"></i>
+                                <span class="link">Analytics</span>
+                            </a>
+                        </li>
+                        <li class="list">
+                            <a href="#" class="nav-link">
+                                <i class='bx bx-message-dots icon'></i>
+                                <span class="link">Messages</span>
+                            </a>
+                        </li>
+                        <li class="list">
+                            <a href="#" class="nav-link">
+                                <i class="bx bx-folder-open icon"></i>
+                                <span class="link">Files</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="bottom-cotent">                       
+                        <li class="list">
+                            <a href="#" class="nav-link" onclick="logout()">
+                                <i class="bx bx-log-out icon"></i>
+                                <span class="link">Logout</span>
+                            </a>
+                        </li>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <section class="overlay"></section>
+
+        <div style="margin-top: 100px;">                   
+            <div class="container mt-5 text-center" id="restaurant-details">
+                <h2>Restaurant Details</h2>
+                <div id="d1">Table loading...</div>
+            </div>
+        </div>
+
+
+
+        <script>
+            const navBar = document.querySelector("nav"),
+                    menuBtns = document.querySelectorAll(".menu-icon"),
+                    overlay = document.querySelector(".overlay");
+
+            menuBtns.forEach((menuBtn) => {
+                menuBtn.addEventListener("click", () => {
+                    navBar.classList.toggle("open");
+                });
+            });
+
+            overlay.addEventListener("click", () => {
+                navBar.classList.remove("open");
+            });
+        </script>
+        <script>
+            var lastScrollTop = 0;
+            navbar = document.getElementById('navbar');
+            window.addEventListener("scroll", function ()
+            {
+                var scrollTop = pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop)
+                {
+                    navbar.style.top = "-70px";
+                    navbar.style.transition = "all 0.4s ease";
+                } else
+                {
+                    navbar.style.top = "0px";
+                }
+                lastScrollTop = scrollTop;
+            }
+            );
+        </script>
+
+    </body>
+</html>
+
+

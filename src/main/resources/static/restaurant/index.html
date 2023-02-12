@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+        <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+
+        <!-- Style -->
+        <link rel="stylesheet" href="css/style.css">
+
+        <title>FoodieGo Partner-Login</title>
+
+        <!--javascript-->
+        <script>
+            function go2()
+            {
+                const type = document.getElementById("password").getAttribute('type') === 'password' ? 'text' : 'password';
+                document.getElementById("password").setAttribute('type', type);
+            }
+
+            function setRestaurentId()
+            {
+                var form = new FormData();
+                
+                form.append("email", localStorage.getItem("restaurant_email"));
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+                        console.log(ans);
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var obj = object[0];
+                        console.log("restaurant_id",obj.id);
+                        localStorage.setItem("restaurant_id", obj.id);                       
+                        id=  localStorage.getItem("restaurant_id");
+                        console.log("Restaurant ID: " + localStorage.getItem("restaurant_id"));
+
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/showRestaurantByEmail", true);
+                //step 3
+                xml.send(form);
+            }
+
+
+            function go()
+            {
+                localStorage.removeItem("restaurant_id");
+                localStorage.removeItem("restaurant_email");
+                if (document.getElementById("email").value != "" && document.getElementById("email").value != null)
+
+                {
+                    var xhttp = new XMLHttpRequest();
+
+                    var form = new FormData();
+                    form.append("email", document.getElementById("email").value);
+                    form.append("password", document.getElementById("password").value);
+                    localStorage.setItem("restaurant_email", document.getElementById("email").value);
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200)
+                        {
+                            var ans = xhttp.responseText;
+                            if (ans === "success")
+                            {
+                                console.log("id: " + ans);
+                                setRestaurentId();
+                                alert("Login successfull, " + localStorage.getItem("restaurant_email"));
+                                location.href = "restaurant_page.html";
+                            } else
+                            {
+                                alert("Error!, Incorrect email and password combination");
+                            }
+                        }
+                    };
+                    xhttp.open("POST", "/restaurantLogin", true);
+                    xhttp.send(form);
+                }
+                else
+                {
+                    alert("Please enter valid email address");
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+
+
+        <div class="d-lg-flex half">
+            <div class="bg order-1 order-md-2" style="background-image: url('food.jpg');"></div>
+            <div class="contents order-2 order-md-1">
+
+                <div class="container">
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-md-7">
+                            <h3 class="fw-bold text-primary m-0"><strong>F</strong><span style="color:#3CB815"><strong>oo</strong></span><strong>die</strong><span style="color:#3CB815"><strong>go</strong></span> Partner</h3>
+                            <p class="mb-4">Manage your restaurant on FoodieGo</p>
+                            <form>
+                                <div class="form-group first">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" placeholder="your-email@gmail.com" id="email">
+                                </div>
+                                <div class="form-group last mb-3">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" placeholder="Your Password" id="password">
+                                </div>
+
+                                <div class="d-flex mb-5 align-items-center">
+                                    <label class="control control--checkbox mb-0"><span class="caption">Show Password</span>
+                                        <input type="checkbox" onclick="go2()"/>
+                                        <div class="control__indicator"></div>
+                                    </label>
+                                    <span class="ml-auto"><a href="#" class="forgot-pass">Forgot Password</a></span>
+                                </div>
+
+                                <input type="button" onclick="go()" value="Log In" class="btn btn-block btn-primary">
+                            </form>                           
+
+                        </div>
+                        <div>
+                            <span class="text-secondary">Want to get your restaurant listed on FoodieGo? <a href="homepage.html">Partner with us</a></span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <script src="js/jquery-3.3.1.min.js"></script>
+        <script src="js/popper.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Restaurant Panel</title>
+        <meta charset="UTF-8">
+        <link href="../bootstrap-5.0.2-dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <style>
+            #header{
+                background: #171a29;
+                color:#FFF;
+                width:100%;
+            }
+            h1{
+                font-family: ProximaNova,arial,Helvetica Neue,sans-serif;
+            }
+            .addr{
+                opacity: 0.7;
+            }
+
+        </style>
+        <script>
+            var id = localStorage.getItem("admin_restaurant_view");
+            
+             function verifyotp(rider_otp, id)
+            {
+                console.log("Rider:"+rider_otp);
+                if (document.getElementById("otp" + rider_otp).value == rider_otp)
+                {
+                    alert("Verification Successful");
+                    var formdata = new FormData();
+                    formdata.append("id", id);
+//                    formdata.append("order_id",order_id);
+                    var xml = new XMLHttpRequest();
+                    //step4
+                    xml.onreadystatechange = function ()
+                    {
+                        if (xml.readyState == 4 && xml.status == 200)
+                        {
+                            if (this.responseText === "Success")
+                            {
+                                location.reload();
+                            } else
+                            {
+                                alert(this.responseText);
+                            }
+                        }
+                    };
+                    //6step 2
+                    xml.open("POST", "/changeStatePick", true);
+                    //step 3
+                    xml.send(formdata);
+                }
+                else
+                {
+                    alert("Incorrect OTP");
+                }
+            }
+            function getDeliveryData()
+            {
+                var formdata = new FormData();
+                formdata.append("id", id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+                        if (ans !== "")
+                        {
+
+                            var mainobj = JSON.parse(ans);
+                            var object = mainobj["ans"];
+                            var result = "";
+                            for (var i = 0; i < object.length; i++)
+                            {
+                                var obj = object[i];
+                                result += "<div class=\"card m-3\">\n" +
+                                        "                                <div class=\"card-header\">\n" +
+                                        "                                    Order ID: <span>" + obj.id + "</span> | Rider ID: <span>" + obj.rid + "</span>\n" +
+                                        "                                </div>\n" +
+                                        "                                <div class=\"row w-100 card-body\">\n" +
+                                        "                                    <div class=\"col-sm-7\">\n" +
+                                        "                                        <h3>" + obj.rider_name + "</h3>\n" +
+                                        "                                        <h6>Contact: " + obj.rider_mobile + "</h6>\n" +
+                                        "                                        Bill ID: " + obj.bid + "| Item Name: " + obj.item_name + " | Quantity: " + obj.quantity + "\n" +
+                                        "                                    </div>\n" +
+                                        "                                    <div class=\"col-sm-4 text-center\">\n" +
+                                        "                                        <h6>One Time Password</h6>\n" +
+                                        "                                        <input type=\"number\" maxlength=\"4\" id=\"otp" + obj.rider_otp + "\"/>\n" +
+                                        "                                        <button onclick=\"verifyotp('" + obj.rider_otp + "'," + obj.id +")\" class=\"btn btn-primary m-3 \">Verify OTP</button>\n" +
+                                        "                                    </div>\n" +
+                                        "                                </div>\n" +
+                                        "                            </div>";
+                            }
+                            document.getElementById("order_picked").innerHTML = result;
+                        }
+
+
+
+                    }
+                };
+                //6step 2
+                xml.open("POST", "/getDeliveryData", true);
+                //step 3
+                xml.send(formdata);
+            }
+            function change_state(id)
+            {
+                var formdata = new FormData();
+                formdata.append("id", id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        if (this.responseText === "Success")
+                        {
+                            location.reload();
+                        } else
+                        {
+                            alert(this.responseText);
+                        }
+                    }
+                };
+                //6step 2
+                xml.open("POST", "/changeStateReady", true);
+                //step 3
+                xml.send(formdata);
+            }
+            function order_list()
+            {
+                var formdata = new FormData();
+                formdata.append("rest_id", id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var a = "<a class='btn btn-primary rounded' data-bs-toggle='modal' data-bs-target='#pending_orders'>Go to pending order</a>";
+                        a += "<br>Number of orders: " + object.length;
+                        var table = "<table class=\"table table-hover\" >\n" +
+                                "                                <thead>\n" +
+                                "                                    <tr>\n" +
+                                "                                        <th>Item Name</th>\n" +
+                                "                                        <th>Quantity</th>\n" +
+                                "                                        <th>Bill ID</th>\n" +
+                                "                                        <th>Change Status</th>\n" +
+                                "                                    </tr>\n" +
+                                "                                </thead>\n" +
+                                "                                <tbody>";
+
+                        for (var i = 0; i < object.length; i++)
+                        {
+                            var obj = object[i];
+                            console.log(obj);
+                            table += "<tr>";
+                            table += "<td>" + obj.item_name + "</td>";
+                            table += "<td>" + obj.quantity + "</td>";
+                            table += "<td>" + obj.bid + "</td>";
+                            table += "<td class='p-2'><a class='btn btn-success' onclick='change_state(" + obj.id + ")'>Ready to go</a></td>";
+                            table += "</tr>";
+                        }
+                        table += "</tbody>";
+                        table += "</table>";
+                        if (object.length !== 0)
+                        {
+                            document.getElementById("cart_rendering").innerHTML = a;
+                            document.getElementById("pending_order_table").innerHTML = table;
+                        }
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/orderList", true);
+                //step 3
+                xml.send(formdata);
+
+            }
+
+            function showItemById()
+            {
+                var form = new FormData();
+                form.append("id", id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var ans = "";
+                        for (var i = 0; i < object.length; i++)
+                        {
+                            var obj = object[i];
+                            console.log(obj);
+                            ans += "<div class='row justify-content-center p-3 mt-5 bg-light' style=\" border-bottom: 2px solid grey;\">";
+                            ans += "                    <div class=\"col-md-9\">";
+                            if (obj.category === "veg")
+                            {
+                                ans += "         <img src=\"../img/veg.png\" alt=\"loading\" style=\"height:30px\"/>";
+                            } else
+                            {
+                                ans += "                        <img src=\"../img/nonveg.png\" alt=\"loading\" style=\"height:30px\"/>";
+                            }
+                            ans += "                        <h3 id=\"item_name\">" + obj.item_name + "</h3>";
+                            ans += "                        &#8377;<span>" + obj.price + "</span>";
+                            ans += "                        <p style=\"color:rgba(40,44,63,.45); \">" + obj.item_description + "</p>";
+                            ans += "<div class='row'>";
+                            ans += "                        <button class=\"btn btn-success text-white col mx-2 disabled\"  id='avail' onclick='addToCart(" + obj.id + ")'>Available</button>";
+                            ans += "                        <button class=\"btn btn-danger text-white col mx-2\"  id='unavail' onclick='addToCart(" + obj.id + ")'>Unavailable</button>";
+
+                            ans += "                    </div>";
+
+                            ans += "                    </div>";
+                            ans += "                    <div class=\"col-md-3 text-end\">";
+                            ans += "                        <img src=\".." + obj.item_image + "\" style=\"width:100%;height:75%;border-radius:10px;margin:5px;padding:0px;\" style='display:flex;align-items:center'/>";
+                            ans += "                    </div>";
+                            ans += "                </div>";
+                        }
+                        document.getElementById("item_list").innerHTML = ans;
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/showItemById", true);
+                //step 3
+                xml.send(form);
+            }
+
+            function updateinfo()
+            {
+
+                var xhttp = new XMLHttpRequest();
+                var form = new FormData();
+                form.append("id", id);
+                form.append("mobile", document.getElementById("mobile").value);
+                form.append("start", document.getElementById("start").value);
+                form.append("end", document.getElementById("end").value);
+                form.append("availability", document.getElementById("availability").value);
+                form.append("category", document.getElementById("category").value);
+                xhttp.onreadystatechange = function ()
+                {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        var ans = xhttp.responseText;
+                        alert(ans);
+                        go();
+
+                    }
+
+                };
+                xhttp.open("POST", "/updateinfo", true);
+                xhttp.send(form);
+
+            }
+            function updateopenclose()
+            {
+
+                var xhttp = new XMLHttpRequest();
+                var form = new FormData();
+                form.append("id", id);
+                form.append("openclose", document.getElementById("open_close").value);
+
+                xhttp.onreadystatechange = function ()
+                {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        var ans = xhttp.responseText;
+                        alert(ans);
+                        go();
+                    }
+
+                };
+                xhttp.open("POST", "/updateopenclose", true);
+                xhttp.send(form);
+
+            }
+            function updatedescription()
+            {
+
+                var xhttp = new XMLHttpRequest();
+                var form = new FormData();
+                form.append("id", id);
+                form.append("description", document.getElementById("description2").value);
+
+                xhttp.onreadystatechange = function ()
+                {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        var ans = xhttp.responseText;
+                        alert(ans);
+                        go();
+                    }
+
+                };
+                xhttp.open("POST", "/updatedescription", true);
+                xhttp.send(form);
+
+            }
+
+            function addItem()
+            {
+                var item_name = document.getElementById("item_name").value;
+                var item_description = document.getElementById("item_description").value;
+                var item_category = document.getElementById("item_category").value;
+                var restaurant_id = id;
+                var photo = document.getElementById("item_image").files[0];
+                var subcategory = document.getElementById("subcategory").value;
+                var item_price = document.getElementById("item_price").value;
+                if (item_name == "" || item_description == "" || item_category == "" || photo == null || item_name == null || item_description == null || item_category == null || subcategory == "" || item_price == "" || item_price == null)
+                {
+                    alert("Please fill all required fields");
+                } else
+                {
+                    var formdata = new FormData();
+                    formdata.append("item_name", item_name);
+                    formdata.append("item_description", item_description);
+                    formdata.append("item_category", item_category);
+                    formdata.append("restaurant_id", restaurant_id);
+                    formdata.append("photo", photo);
+                    formdata.append("subcategory", subcategory);
+                    formdata.append("item_price", item_price);
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function ()
+                    {
+                        if (this.readyState == 4 && this.status == 200)
+                        {
+                            alert(this.responseText);
+                        }
+                    };
+                    xhttp.open("Post", "/addItem", true);
+                    xhttp.send(formdata);
+                }
+            }
+            function category()
+            {
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var output = "<option value=''>Select your option</option>";
+                        var cuisines = "<div class=\"col-lg-1 col-md-2 col-sm-2 col-3\" style='display:flex;align-items:center'>\n" +
+                                "   <h5>All items</h5>\n" +
+                                "</div>";
+                        for (var i = 0; i < object.length; i++)
+                        {
+                            var obj = object[i];
+                            output += "<option value=\"" + obj.cuisines_name + "\">" + obj.cuisines_name + "</option>";
+                            cuisines += "<div class=\"col-lg-1 col-md-2 col-sm-2 col-3\">\n" +
+                                    "    <img src=\"../" + obj.cuisines_image + "\" style='width:100%' alt=\"img\"/>\n" +
+                                    "</div>";
+                        }
+                        document.getElementById("item_category").innerHTML = output;
+                        document.getElementById("pc").innerHTML = cuisines;
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/category", true);
+                //step 3
+                xml.send();
+            }
+
+            function go()
+            {
+                var form = new FormData();
+                form.append("id", id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState === 4 && xml.status === 200)
+                    {
+                        var ans = xml.responseText;
+
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var obj = object[0];
+                        console.log(obj);
+                        id = obj.id;
+                        if (obj.restaurant_name === null)
+                        {
+                            history.back();
+
+                        }
+                        if (obj.photo !== null)
+                        {
+                            document.getElementById("image").src = ".." + obj.photo;
+                        }
+                        if (obj.restaurant_name !== null)
+                        {
+                            document.getElementById("name").innerHTML = obj.restaurant_name;
+
+                        }
+                        if (obj.address !== null)
+                        {
+                            document.getElementById("address").innerHTML = obj.address;
+
+                        }
+                        if (obj.description !== null)
+                        {
+                            document.getElementById("description").innerHTML = obj.description;
+                        }
+                        if (obj.rating !== null)
+                        {
+                            document.getElementById("rating").innerHTML = obj.rating;
+                        }
+                        if (obj.delivery_starts !== null)
+                        {
+                            document.getElementById("delivery_starts").innerHTML = obj.delivery_starts.slice(0, 5);
+                        }
+                        if (obj.delivery_ends !== null)
+                        {
+                            document.getElementById("delivery_ends").innerHTML = obj.delivery_ends.slice(0, 5);
+                        }
+                        console.log(obj.current_status);
+                        document.getElementById("open").innerHTML = obj.current_status;
+                        document.getElementById("open_close").value = obj.current_status;
+                        document.getElementById("minprice").innerHTML = obj.min_order_delivery;
+                        document.getElementById("mobile").value = obj.mobile;
+                        document.getElementById("start").value = obj.delivery_starts.slice(0, 5);
+                        document.getElementById("end").value = obj.delivery_ends.slice(0, 5);
+                        document.getElementById("category").value = obj.category;
+                        document.getElementById("availability").value = obj.availability;
+                        showItemById();
+                        order_list();
+                        getDeliveryData();
+
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/five", true);
+                //step 3
+                xml.send(form);
+                category();
+            }
+        </script>
+    </head>
+    <body onload="go()">
+        <div id="header">
+            <div class="text-end p-3" data-bs-toggle="modal" data-bs-target="#myModal">
+                <i class="fa fa-cog" style="font-size:28px;" aria-hidden="true"></i>
+            </div>       
+
+            <!--The Modal start-->
+            <div class="modal" id="myModal">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header text-dark">
+                            <h4 class="modal-title">Update Information</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body text-secondary">
+
+                            <div class="form-floating m-5">
+                                <input type="text" id="mobile" class="form-control" placeholder="Phone Number" name="mobile">                  
+                                <label for="mobile">Phone Number</label> 
+                            </div> 
+                            <div class="row m-5">
+                                <div class='col-sm-12 col-md-6 col-xs-12 '>
+                                    <div>
+                                        <label for="description">Delivery Starts</label> 
+                                        <input type='time' class="form-control" style='font-size: 24px' id="start" name="start" required/>                        
+                                    </div>
+                                </div>
+                                <div class='col-sm-12 col-md-6 col-xs-12'>
+                                    <div>
+                                        <label for="description">Delivery Ends</label>
+                                        <input type='time' class="form-control" style='font-size: 24px' id="end" name="end" required/>                         
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-floating m-5">
+                                <select name="category" id="category" class="form-select" placeholder="Please select category">
+                                    <option value="veg">Veg</option>
+                                    <option value="non-veg">Non-Veg</option>
+                                    <option value="both">Veg & Non-Veg</option>                                
+                                </select>
+                                <label for="category">Restaurant's Category</label> 
+                            </div>
+                            <div class="form-floating m-5">
+                                <select name="availability" id="availability" class="form-select">
+                                    <option value="automatic">Automatically - using restaurant's timing</option>
+                                    <option value="manual">Manually - using restaurant portal(Open/Close)</option>                           
+                                </select>
+                                <label for="category">Show availability</label> 
+                            </div>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="updateinfo()">Submit</button>
+
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!--model end-->
+
+            <!--pending orders-->
+            <!--The Modal start-->
+            <div class="modal" id="pending_orders">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header text-dark">
+                            <h4 class="modal-title">Pending Order</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body text-secondary" id="pending_order_table">
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!--model end-->
+
+            <!--orders pickup-->
+            <!--The Modal start-->
+            <div class="modal" id="pickup_orders">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header text-dark">
+                            <h4 class="modal-title">Order Pick Up</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body text-secondary" id="order_picked">
+                            There is no pending pickup.
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!--model end-->
+
+            <!--open close modal-->
+            <div class="modal" id="openclose">                
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header text-dark">
+                            <h4 class="modal-title">Update Information</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="modal-body text-secondary">
+                            <div class="form-floating">
+                                <select name="open_close" id="open_close" onchange="openclosetoggle()" class="form-control" placeholder="Select Open or Close">
+                                    <option value="Opened">Opened</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                                <label for="open_close">Change Open/Close</label> 
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-primary" onclick="updateopenclose()">Submit</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end of open close modal-->
+
+            <div class="modal" id="additem">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header text-dark">
+                            <h4 class="modal-title">Add new item</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="modal-body text-secondary">
+                            <div class="form-floating m-3">
+                                <input type="text" class="form-control" id="item_name" placeholder="item_name" name="item_name">                      
+                                <label for="item_name">Item's Name</label> 
+                            </div> 
+                            <div class="form-floating m-3">
+                                <input type="text" class="form-control" id="item_description" placeholder="item_description" name="item_description">                      
+                                <label for="item_description">Description</label> 
+                            </div> 
+                            <div class="form-floating m-3">
+                                <select name="item_category" id="item_category" class="form-control" placeholder="item_category">                                    
+                                </select>
+                                <label for="item_category">Category</label> 
+                            </div>
+                            <div class="m-3">
+                                Item's Image
+                                <input type="file" class="form-control bg-white" id="item_image" accept="image/*" name="item_image">                     
+                            </div> 
+                            <div class="form-floating m-3">
+                                <select name="subcategory" id="subcategory" class="form-select" placeholder="Please select category">
+                                    <option value="">Select your option</option>
+                                    <option value="veg">Veg</option>
+                                    <option value="non-veg">Non-Veg</option>                              
+                                </select>
+                                <label for="subcategory">Veg/Non-Veg</label> 
+                            </div>
+                            <div class="form-floating m-3">
+                                <input type="number" class="form-control" id="item_price" placeholder="item_price" name="item_price">                      
+                                <label for="item_price">Item's Price</label> 
+                            </div> 
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">                            
+                            <button type="button" class="btn btn-primary" onclick="addItem()">Submit</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--description modal-->
+            <div class="modal" id="description3">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header text-dark">
+                            <h4 class="modal-title">Update Information</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="modal-body text-secondary">
+                            <div class="form-floating">
+                                <textarea class="form-control" id="description2" name="description" placeholder="Description"></textarea>
+                                <label for="description">Description</label> 
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="updatedescription()">Submit</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end of description modal-->
+
+            <div class="container py-3 px-5">
+                <div class="row align-items-center m-3" style="width:100%">
+                    <div class="col-lg-3">                        
+                        <img src=" ../uploads/images/RKFoodPlaza.jpg" id="image" class="w-100"/>
+                    </div>
+                    <div class="col-lg-6 m-2 mt-2" style="color:#fff;">
+                        <h2 id="name">-</h2>
+                        <div>
+                            <div class="addr" id="description" data-bs-toggle="modal" data-bs-target="#description3">
+                                -
+                            </div>
+                            <div class="addr" id="address">
+                                -
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div>
+                                        <span><span><i class="fa fa-star" aria-hidden="true"></i></span> <span id="rating">-</span></span>
+                                    </div>
+                                    <div class="addr">
+                                        <span>Overall Rating</span>
+                                    </div>
+                                </div>
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div>
+                                        <span><span><i class="fa fa-clock-o" aria-hidden="true"></i></span> <span id="delivery_starts">00:00</span> - <span id="delivery_ends">00:00</span></span>
+                                    </div>
+                                    <div class="addr">Daily Timing</div>
+                                </div>
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div data-bs-toggle="modal" data-bs-target="#openclose">
+                                        <span id="open">-</span>
+                                    </div>
+                                    <div class="addr">For Delivery</div>
+                                </div>
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div>
+                                        <span><span>₹ <span id="minprice"></span></span>
+                                    </div>
+                                    <div class="addr">
+                                        <span>Minimum Order for two</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="text-end mx-4 my-2" data-bs-toggle="modal" data-bs-target="#additem">                        
+            <h6>Add restaurant's item</h6>       
+            <br>
+        </div>
+        <div class="container">
+            <div class="text-center">
+                <h3>Popular Cuisines</h3>
+                <hr>
+                <div class="row text-center justify-content-center" id="pc"></div>
+            </div> 
+
+            <div class='row m-4 mt-5'>
+                <div class='col-sm-7 mx-5' id='item_list'>
+                    <h3 class='text-center'>Items not available</h3>
+                </div>
+                <div id='cart' class='col-sm-3 text-center'>
+                    <div id="cart_rendering">
+                        <h3 style='color:#7e808c;font-weight: 500'>Order List Empty</h3>
+                        <img src='../img/empty_cart.jpg' style="width: 100%"/>
+                    </div>
+                    <div>
+                        <a class="btn btn-success m-5" data-bs-toggle='modal' data-bs-target='#pickup_orders'>Pick Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>FoodieGo - Good Food, Great Vibes</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="" name="keywords">
+        <meta content="" name="description">
+
+        <!-- Favicon -->
+        <link href="img/icon.ico" rel="icon">
+
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Lora:wght@600;700&display=swap" rel="stylesheet"> 
+
+        <!-- Icon Font Stylesheet -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Libraries Stylesheet -->
+        <link href="lib/animate/animate.min.css" rel="stylesheet">
+        <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+        <link href="css/style.css" rel="stylesheet">
+
+        <script>
+            function selectRestaurant(id)
+            {
+                if (localStorage.getItem("user_email") == null || localStorage.getItem("user_email") == "")
+                {
+                    alert("Login required!");
+                    location.href = "userlogin.html";
+                } else
+                {
+                    localStorage.setItem("user_restaurant_id", id);
+                    location.href = "restaurant_user.html";
+                }
+
+            }
+
+            function loadRestaurant(city)
+            {
+// my message
+                var form = new FormData();
+                form.append("city", "AMRITSAR");
+                var xml = new XMLHttpRequest();
+                //step4
+
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+//                            console.log(ans);
+                        var mainobj = JSON.parse(ans);
+
+
+                        var arr = mainobj["ans"];
+                        console.log(arr.length);
+                        document.getElementById("no_of_restaurant").innerHTML = arr.length;
+
+                        var res = "";
+                        for (var i = 0; i < arr.length; i++)
+                        {
+                            var obj = arr[i];
+                            res += "<div class=\"col-xl-3 col-lg-4 col-md-6 wow fadeInUp\" data-wow-delay=\"0.1s\" onclick='selectRestaurant(" + obj.id + ")'>\n" +
+                                    "                                <div class=\"product-item\">\n" +
+                                    "                                    <div class=\"position-relative bg-light overflow-hidden\">\n" +
+                                    "                                        <img class=\"img-fluid w-100\" src=\"" + obj.photo + "\" alt=\"\">\n" +
+                                    "                                        <div class=\"bg-secondary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3\" style='border-radius:5px;'><i class=\"fa fa-star\" aria-hidden=\"true\"></i> " + obj.rating + "</div>\n" +
+                                    "                                    </div>\n" +
+                                    "                                    <div class=\"p-4\">\n" +
+                                    "                                        <div class='mt-4'>\n" +
+                                    "                                            <h5>" + obj.restaurant_name + "</h5>                                            \n" +
+                                    "                                        </div>\n" +
+                                    "                                        <div style='color:#686b78'><p>" + obj.description + "</p></div>\n" +
+                                    "                                    </div>\n" +
+                                    "                                    <div class=\"d-flex border-top text-primary\">\n" +
+                                    "                                        <small class=\"w-50 text-center border-end py-2\">\n" +
+                                    "                                            <span>" + obj.current_status + "</span>\n" +
+                                    "                                        </small>\n" +
+                                    "                                        <small class=\"w-50 text-center py-2\">\n" +
+                                    "                                            &#8377; <span id='mincost'>" + obj.min_order_delivery + "</span> FOR TWO\n" +
+                                    "                                        </small>\n" +
+                                    "                                    </div>\n" +
+                                    "                                </div>\n" +
+                                    "                            </div>";
+                        }
+
+                        document.getElementById("rating").innerHTML = res;
+
+
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/loadRestaurant", true);
+                //step 3
+                xml.send(form);
+            }
+
+            function loadRestaurant2(city)
+            {
+
+                var form = new FormData();
+                form.append("city", city.toUpperCase());
+                var xml = new XMLHttpRequest();
+                //step4
+
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+//                            console.log(ans);
+                        var mainobj = JSON.parse(ans);
+
+
+                        var arr = mainobj["ans"];
+                        console.log(arr.length);
+                        document.getElementById("no_of_restaurant").innerHTML = arr.length;
+
+                        var res = "";
+                        for (var i = 0; i < arr.length; i++)
+                        {
+                            var obj = arr[i];
+                            res += "<div class=\"col-xl-3 col-lg-4 col-md-6 wow fadeInUp\" data-wow-delay=\"0.1s\" onclick='selectRestaurant(" + obj.id + ")'>\n" +
+                                    "                                <div class=\"product-item\">\n" +
+                                    "                                    <div class=\"position-relative bg-light overflow-hidden\">\n" +
+                                    "                                        <img class=\"img-fluid w-100\" src=\"" + obj.photo + "\" alt=\"\">\n" +
+                                    "                                        <div class=\"bg-secondary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3\" style='border-radius:5px;'><i class=\"fa fa-star\" aria-hidden=\"true\"></i> " + obj.rating + "</div>\n" +
+                                    "                                    </div>\n" +
+                                    "                                    <div class=\"p-4\">\n" +
+                                    "                                        <div class='mt-4'>\n" +
+                                    "                                            <h5>" + obj.restaurant_name + "</h5>                                            \n" +
+                                    "                                        </div>\n" +
+                                    "                                        <div style='color:#686b78'><p>" + obj.description + "</p></div>\n" +
+                                    "                                    </div>\n" +
+                                    "                                    <div class=\"d-flex border-top text-primary\">\n" +
+                                    "                                        <small class=\"w-50 text-center border-end py-2\">\n" +
+                                    "                                            <span>" + obj.current_status + "</span>\n" +
+                                    "                                        </small>\n" +
+                                    "                                        <small class=\"w-50 text-center py-2\">\n" +
+                                    "                                            &#8377; <span id='mincost'>" + obj.min_order_delivery + "</span> FOR TWO\n" +
+                                    "                                        </small>\n" +
+                                    "                                    </div>\n" +
+                                    "                                </div>\n" +
+                                    "                            </div>";
+                        }
+
+                        document.getElementById("lowtohigh").innerHTML = res;
+
+
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/loadRestaurant2", true);
+                //step 3
+                xml.send(form);
+            }
+
+            function loadRestaurant3(city)
+            {
+                var form = new FormData();
+                form.append("city", city.toUpperCase());
+                var xml = new XMLHttpRequest();
+                //step4
+
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+//                            console.log(ans);
+                        var mainobj = JSON.parse(ans);
+
+
+                        var arr = mainobj["ans"];
+                        console.log(arr.length);
+                        document.getElementById("no_of_restaurant").innerHTML = arr.length;
+
+                        var res = "";
+                        for (var i = 0; i < arr.length; i++)
+                        {
+                            var obj = arr[i];
+                            res += "<div class=\"col-xl-3 col-lg-4 col-md-6 wow fadeInUp\" data-wow-delay=\"0.1s\" onclick='selectRestaurant(" + obj.id + ")'>\n" +
+                                    "                                <div class=\"product-item\">\n" +
+                                    "                                    <div class=\"position-relative bg-light overflow-hidden\">\n" +
+                                    "                                        <img class=\"img-fluid w-100\" src=\"" + obj.photo + "\" alt=\"\">\n" +
+                                    "                                        <div class=\"bg-secondary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3\" style='border-radius:5px;'><i class=\"fa fa-star\" aria-hidden=\"true\"></i> " + obj.rating + "</div>\n" +
+                                    "                                    </div>\n" +
+                                    "                                    <div class=\"p-4\">\n" +
+                                    "                                        <div class='mt-4'>\n" +
+                                    "                                            <h5>" + obj.restaurant_name + "</h5>                                            \n" +
+                                    "                                        </div>\n" +
+                                    "                                        <div style='color:#686b78'><p>" + obj.description + "</p></div>\n" +
+                                    "                                    </div>\n" +
+                                    "                                    <div class=\"d-flex border-top text-primary\">\n" +
+                                    "                                        <small class=\"w-50 text-center border-end py-2\">\n" +
+                                    "                                            <span>" + obj.current_status + "</span>\n" +
+                                    "                                        </small>\n" +
+                                    "                                        <small class=\"w-50 text-center py-2\">\n" +
+                                    "                                            &#8377; <span id='mincost'>" + obj.min_order_delivery + "</span> FOR TWO\n" +
+                                    "                                        </small>\n" +
+                                    "                                    </div>\n" +
+                                    "                                </div>\n" +
+                                    "                            </div>";
+                        }
+
+                        document.getElementById("hightolow").innerHTML = res;
+
+
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/loadRestaurant3", true);
+                //step 3
+                xml.send(form);
+            }
+
+
+
+            // Step 1: Get user coordinates
+            function getCoordinates()
+            {
+                var options = {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                };
+
+                function success(pos)
+                {
+                    var crd = pos.coords;
+                    var lat = crd.latitude.toString();
+                    var lng = crd.longitude.toString();
+                    var coordinates = [lat, lng];
+                    console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+                    getCity(coordinates);
+
+                    return;
+
+                }
+
+                function error(err)
+                {
+                    console.warn(`ERROR(${err.code}): ${err.message}`);
+                }
+
+                navigator.geolocation.getCurrentPosition(success, error, options);
+            }
+
+            // Step 2: Get city name
+            function getCity(coordinates)
+            {
+                var xhr = new XMLHttpRequest();
+                var lat = coordinates[0];
+                var lng = coordinates[1];
+
+                // Paste your LocationIQ token below.
+                xhr.open('GET', "https://us1.locationiq.com/v1/reverse.php?key=pk.c1d6ed1559273758feb881ccc6ae74a5&lat=" + lat + "&lon=" + lng + "&format=json", true);
+                xhr.send();
+                xhr.onreadystatechange = processRequest;
+                xhr.addEventListener("readystatechange", processRequest, false);
+
+                function processRequest(e)
+                {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        var city = response.address.city;
+//                        var addr = response.display_name;
+                        console.log(city);
+                        document.getElementById("addr").innerHTML = city;
+                        loadRestaurant(city);
+                        loadRestaurant2(city);
+                        loadRestaurant3(city);
+                        if (localStorage.getItem("user_email") != null || localStorage.getItem("user_email") != "")
+                        {
+                            document.getElementById("headeremail").innerHTML = localStorage.getItem("user_email");
+                        }
+
+                        return;
+                    }
+                }
+            }
+
+
+
+
+
+        </script>
+    </head>
+
+    <body onload="getCoordinates()">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <!-- Spinner End -->
+
+
+        <!-- Navbar Start -->
+        <div class="container-fluid fixed-top  px-0 wow fadeIn" data-wow-delay="0.1s">
+            <div class="top-bar row gx-0 align-items-center d-none d-lg-flex">
+                <div class="col-lg-6 px-5 text-start text-white">
+                    <small><i class="fa fa-map-marker-alt me-2" onclick="getCoordintes()"></i><span id="addr"></span></small>
+                    <small class="ms-4"><i class="fa fa-envelope me-2"></i><a href='mailto:foodiego.inderjit@gmail.com' class="text-white">foodiego.inderjit@gmail.com</a></small>
+                </div>
+                <div class="col-lg-6 px-5 text-end text-white">
+                    <small>Follow us:</small>
+                    <a class="text-body ms-3" href="https://www.facebook.com/profile.php?id=100083061109419"><i class="fab fa-facebook-f text-white"></i></a>
+                    <a class="text-body ms-3" href="https://twitter.com/INDERJIT112000"><i class="fab fa-twitter text-white"></i></a>
+                    <a class="text-body ms-3" href="https://www.linkedin.com/in/inderjit-singh-babbar-63ab43197/"><i class="fab fa-linkedin-in text-white"></i></a>
+                    <a class="text-body ms-3" href="https://www.instagram.com/inderjit7582/"><i class="fab fa-instagram text-white"></i></a>
+                </div>
+            </div>
+
+            <nav class="navbar bg-white navbar-expand-lg navbar-dark py-lg-0 px-lg-5 wow fadeIn" style="opacity:0.95">
+                <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
+                    <h1 class="fw-bold text-primary m-0">F<span class="text-secondary">oo</span>die<span class="text-secondary">go</span></h1>
+                </a>
+                <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto p-4 p-lg-0">
+                        <a href="index.html" class="nav-item nav-link active text-dark">Home</a>
+                        <a href="contact.html" class="nav-item nav-link">Contact Us</a>
+                       
+                        <a class="nav-item nav-link" href="userlogin.html">
+                            <small class="fa fa-user text-body"></small> <span id="headeremail">Login</span>
+                        </a>
+                    </div>
+                    <div class="d-none d-lg-flex ms-2">                    
+
+                        <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
+                            <small class="fa fa-shopping-bag text-body"></small>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Navbar End -->
+
+
+        <!-- Carousel Start -->
+        <div class="container-fluid p-0 mb-5 wow fadeIn" data-wow-delay="0.1s">
+            <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img class="w-100" src="img/img1.jpg" style="height: 90vh;" alt="Image">
+                        <div class="carousel-caption">
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="w-100" src="img/img2.jpg" style="height: 90vh;" alt="Image">
+                        <div class="carousel-caption">
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="w-100" src="img/img3.jpg" style="height: 90vh;" alt="Image">
+                        <div class="carousel-caption">
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#header-carousel"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+        <!-- Carousel End -->
+
+
+
+        <!-- Feature Start -->
+        <div class="container-fluid bg-light bg-icon my-5 py-6">
+            <div class="container">
+                <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                    <h1 class="display-5 mb-3">Our Features</h1>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="bg-primary text-center h-100 p-4 p-xl-5">
+                            <img class="img-fluid mb-4" src="img/icon-1.jpg" alt="" style="height:30vh;">
+                            <h4 class="mb-3 text-white">No Minimum Order</h4>
+                            <p class="mb-4 text-light">Order in for yourself or for the group, with no restrictions on order value</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="bg-primary text-center h-100 p-4 p-xl-5">
+                            <img class="img-fluid  mb-4" src="img/icon-2.jpg" alt="" style="height:30vh;">
+                            <h4 class="mb-3 text-white">Live Order Tracking</h4>
+                            <p class="mb-4 text-light">Know where your order is at all times, from the restaurant to your doorstep</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                        <div class="bg-primary text-center h-100 p-4 p-xl-5">
+                            <img class="img-fluid mb-4" src="img/icon-3.jpg" alt="" style="height:30vh;">
+                            <h4 class="mb-3 text-white">Lightning-Fast Delivery</h4>
+                            <p class="mb-4 text-light">Experience FoodieGo's superfast delivery for food delivered fresh & on time</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Feature End -->
+
+
+        <!-- Product Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="row g-0 gx-5 align-items-end">
+                    <div class="col-lg-6">
+                        <div class="section-header text-start mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                            <h1 class="display-5 mb-3"><span id="no_of_restaurant">0</span> Restaurants available</h1>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 text-start text-lg-end wow slideInRight" data-wow-delay="0.1s">
+                        <ul class="nav nav-pills d-inline-flex justify-content-end mb-5">
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-primary border-2 active" data-bs-toggle="pill" href="#tab-1">Rating-wise</a>
+                            </li>
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-primary border-2" data-bs-toggle="pill" href="#tab-2">Low to High</a>
+                            </li>
+                            <li class="nav-item me-0">
+                                <a class="btn btn-outline-primary border-2" data-bs-toggle="pill" href="#tab-3">High to Low</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+                <div class="tab-content">
+                    <div id="tab-1" class="tab-pane fade show p-0 active">
+                        <div class="row g-4" id='rating'>                        
+
+                        </div>
+                    </div>
+                    <div id="tab-2" class="tab-pane fade show p-0 ">
+                        <div class="row g-4" id='lowtohigh'>                           
+
+                        </div>
+                    </div>
+                    <div id="tab-3" class="tab-pane fade show p-0">
+                        <div class="row g-4" id='hightolow'>                            
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Product End -->
+
+
+        <!--         Firm Visit Start 
+                <div class="container-fluid bg-primary bg-icon mt-5 py-6">
+                    <div class="container">
+                        <div class="row g-5 align-items-center">
+                            <div class="col-md-7 wow fadeIn" data-wow-delay="0.1s">
+                                <h1 class="display-5 text-white mb-3">Visit Our Firm</h1>
+                                <p class="text-white mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos.</p>
+                            </div>
+                            <div class="col-md-5 text-md-end wow fadeIn" data-wow-delay="0.5s">
+                                <a class="btn btn-lg btn-secondary rounded-pill py-3 px-5" href="">Visit Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 Firm Visit End -->
+
+
+        <!-- Testimonial Start -->
+        <div class="container-fluid bg-light bg-icon py-6 mb-5">
+            <div class="container">
+                <div class="section-header text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                    <h1 class="display-5 mb-3">Customer Review</h1>
+                    <br>
+                </div>
+                <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="testimonial-item position-relative bg-white p-5 mt-4">
+                        <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
+                        <p class="mb-4">FoodieGo is the fastest food service providing company.</p>
+                        <div class="d-flex align-items-center">
+                            <img class="flex-shrink-0 rounded-circle" src="img/angad.jpg" alt="">
+                            <div class="ms-3">
+                                <h5 class="mb-1">Angadjit Singh</h5>
+                                <span>Software Developer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item position-relative bg-white p-5 mt-4">
+                        <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
+                        <p class="mb-4">While I was working in office, I won't able to go outside and buy fresh food and FoodieGo is the best option for me to order food online.</p>
+                        <div class="d-flex align-items-center">
+                            <img class="flex-shrink-0 rounded-circle" src="img/gurkirat.jpg" alt="">
+                            <div class="ms-3">
+                                <h5 class="mb-1">Gurkirat Singh</h5>
+                                <span>Software Developer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item position-relative bg-white p-5 mt-4">
+                        <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
+                        <p class="mb-4">Almost all the restaurants are onboard on FoodieGo, which makes this a wonderful food delivering app among all.</p>
+                        <div class="d-flex align-items-center">
+                            <img class="flex-shrink-0 rounded-circle" src="img/kabir.jpg" alt="">
+                            <div class="ms-3">
+                                <h5 class="mb-1">Kabir Piplani</h5>
+                                <span>Software Developer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item position-relative bg-white p-5 mt-4">
+                        <i class="fa fa-quote-left fa-3x text-primary position-absolute top-0 start-0 mt-n4 ms-5"></i>
+                        <p class="mb-4">FoodieGo is the only 24hrs available food delivery app.</p>
+                        <div class="d-flex align-items-center">
+                            <img class="flex-shrink-0 rounded-circle" src="img/abhishek.jpg" alt="">
+                            <div class="ms-3">
+                                <h5 class="mb-1">Abhishek Poddar</h5>
+                                <span>Software Developer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Testimonial End -->
+
+
+
+        <!-- Footer Start -->
+        <div class="container-fluid bg-dark footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <h1 class="fw-bold text-primary mb-4">F<span class="text-secondary">oo</span>die<span class="text-secondary">go</span></h1>
+                        <p>“Three words - clean, swift and consistent! This sums up FoodieGo's service offering.”</p>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-square btn-outline-light rounded-circle me-1" href=""><i class="fab fa-youtube"></i></a>
+                            <a class="btn btn-square btn-outline-light rounded-circle me-0" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="text-light mb-4">Address</h4>
+                        <p><i class="fa fa-map-marker-alt me-3"></i>Tehsilpura, Amritsar, Punjab</p>
+                        <p><i class="fa fa-phone-alt me-3"></i>+91-7009725940</p>
+                        <p><i class="fa fa-envelope me-3"></i>foodiego.inderjit@gmail.co</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="text-light mb-4">Quick Links</h4>
+                        <a class="btn btn-link" href="">About Us</a>
+                        <a class="btn btn-link" href="">Contact Us</a>
+                        <a class="btn btn-link" href="">Terms & Condition</a>
+                        <a class="btn btn-link" href="">Support</a>
+                        <a class="btn btn-link" href="/restaurant/index.html">Partner Login</a>
+
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h4 class="text-light mb-4">Newsletter</h4>
+                        <p>Register to promotional emails...</p>
+                        <div class="position-relative mx-auto" style="max-width: 400px;">
+                            <input class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                            <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid copyright">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                            &copy; <a href="#">www.foodiego.com</a>, All Right Reserved.
+                        </div>
+                        <div class="col-md-6 text-center text-md-end">
+                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                            Designed By <a href="https://htmlcodex.com">Inderjit Singh Babbar</a>
+                            <!--<br>Distributed By: <a href="https://www.linkedin.com/in/inderjit-singh-babbar-63ab43197/" target="_blank">ThemeWagon</a>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/wow/wow.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/waypoints/waypoints.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
+    </body>
+
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="restaurant/fonts/icomoon/style.css">
+
+        <link rel="stylesheet" href="restaurant/css/owl.carousel.min.css">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="restaurant/css/bootstrap.min.css">
+
+        <!-- Style -->
+        <link rel="stylesheet" href="restaurant/css/style.css">
+
+        <title>FoodieGo Partner-Login</title>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+        <!--javascript-->
+        <script>
+
+
+            function go()
+            {
+                var username = document.getElementById("username").value.trim();
+                var email = document.getElementById("email").value.trim();
+                var mobile = document.getElementById("mobile").value.trim();
+                var password = document.getElementById("password").value.trim();
+                var dob = document.getElementById("dob").value;
+                var atposition = email.indexOf("@");
+                var dotposition = email.lastIndexOf(".");
+                console.log(parseInt(new Date().getFullYear()) - 5);
+            
+
+
+
+                if (username === "" || email === "" || mobile === "" || password === "" || dob === "" ||
+                        username === null || email === null || mobile === null || password === null || dob === null)
+                {
+                    alert("Please fill all the required fields.");
+                } else if (parseInt(dob.substring(0,4)) > parseInt(new Date().getFullYear()) - 5)
+                {
+                    alert("Only 5 year + old users' are allowed.");
+                } else if (username.length < 3) {
+                    alert("Username should be minimum 3 character.");
+                } else if (atposition < 1 || dotposition < atposition + 2 || dotposition + 2 >= email.length || email.includes(".."))
+                {
+                    alert("Invalid email id!, Please enter valid email id.");
+                } else if (mobile.length !== 10)
+                {
+                    alert("Please enter valid mobile number.");
+                } else
+                {
+                    var form = new FormData();
+                    form.append("username", username);
+                    form.append("email", email);
+                    form.append("mobile", mobile);
+                    form.append("password", password);
+                    form.append("dob", dob);
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function ()
+                    {
+                        if (this.readyState === 4 && this.status === 200)
+                        {
+                            if (this.responseText === "success")
+                            {
+                                swal({
+                                    title: "Good job!",
+                                    text: "Sign Up Successfully!",
+                                    icon: "success"
+                                }).then(function () {
+                                    location.href = "userlogin.html";
+                                });
+
+
+                            } else
+                            {
+                                alert(this.responseText);
+//                                document.getElementById("myform").reset();
+                            }
+                        }
+                    };
+                    xhttp.open("Post", "/usersignup", true);
+                    xhttp.send(form);
+
+
+                }
+
+            }
+            function verifyuser()
+            {
+                var formdata = new FormData();
+                formdata.append("email", document.getElementById("email").value);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function ()
+                {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        alert(this.responseText);
+                    }
+                };
+                xhttp.open("Post", "/verifyEmail", true);
+                xhttp.send(formdata);
+            }
+        </script>
+    </head>
+
+    <body>
+
+
+        <div class="d-lg-flex half">
+            <div class="bg order-1 order-md-1" style="background-image: url('restaurant/food.jpg');"></div>
+            <div class="contents order-2 order-md-2">
+
+                <div class="container">
+                    <div class="row align-items-center justify-content-center ">
+                        <div class="col-md-8">
+                            <h3 class="fw-bold text-primary m-0 my-3 text-center">Sign-up with <strong>F</strong><span style="color:#3CB815"><strong>oo</strong></span><strong>die</strong><span style="color:#3CB815"><strong>go</strong></span></h3>
+
+                            <form id="myform">
+                                <div class="form-group first">
+                                    <label for="username">Username</label>
+                                    <input type="username" class="form-control" placeholder="your-firstname" id="username">
+                                </div>
+                                <div class="form-group first">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" placeholder="your-email@gmail.com" id="email">
+                                </div>
+                                <div class="form-group first">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" placeholder="Enter your password here" id="password">
+                                </div>
+                                <div class="form-group first">
+                                    <label for="mobile">Mobile Number</label>
+                                    <input type="number" class="form-control" placeholder="Enter mobile number and do not include country code" id="mobile">
+                                </div>
+                                <div class="form-group first">
+                                    <label for="dob">Date of Birth</label>
+                                    <input type="date" class="form-control" id="dob">
+                                </div>
+                                <input type="button" onclick="go()" value="Sign Up" class="btn btn-block btn-primary">
+                            </form>     
+                        </div>
+                        <div>
+                            <span class="text-secondary">Already register on FoodieGo? <a href="userlogin.html">Login here</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

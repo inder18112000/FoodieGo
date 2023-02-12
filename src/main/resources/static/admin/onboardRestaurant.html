@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            function load()
+            {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () 
+                {
+                    if (this.readyState == 4 && this.status == 200) 
+                    {
+                        console.log(this.responseText); 
+                        var obj = JSON.parse(this.responseText.toString());
+                        console.log(obj);
+                        document.write(obj);
+                    }
+                };
+                xhttp.open("POST", "/three", true);
+                xhttp.send();
+           
+            }
+        </script>
+    </head>
+    <body onload="load()">
+        <div id="container">
+            <div id="d1">
+                
+            </div>
+        </div>
+    </body>
+</html>

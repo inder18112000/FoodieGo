@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Restaurant Panel</title>
+        <meta charset="UTF-8">
+        <link href="../bootstrap-5.0.2-dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        
+        <style>
+            #header{
+                background: #171a29;
+                color:#FFF;
+                width:100%;
+            }
+            h1{
+                font-family: ProximaNova,arial,Helvetica Neue,sans-serif;
+            }
+            .addr{
+                opacity: 0.7;
+            }
+
+        </style>
+        <script>
+            var id = localStorage.getItem("user_restaurant_id");
+            var user_id = localStorage.getItem("user_id");
+            var user_name = localStorage.getItem("user_name");
+            var user_mobile = localStorage.getItem("user_mobile");
+            var rest_name;
+            var rest_address;
+            var rest_mobile;
+            var quantity = 0;
+            var del = 0;
+            
+
+            function checkout()
+            {
+                let currentDate = new Date().toJSON().slice(0, 10);
+                console.log(currentDate);
+                var formdata = new FormData();
+                formdata.append("total_bill_amount",del+parseInt(localStorage.getItem("total_amount")));
+                formdata.append("delivery_charges",localStorage.getItem("delivery"));
+                formdata.append("restaurant_id", id);
+                formdata.append("date", currentDate);
+                formdata.append("user_id", user_id);
+                formdata.append("user_name",user_name);
+                formdata.append("user_mobile",user_mobile);
+                formdata.append("rest_name",rest_name);
+                formdata.append("rest_address",rest_address);
+                formdata.append("rest_mobile",rest_mobile);
+                formdata.append("user_email",localStorage.getItem("user_email"));
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        var ans = this.responseText;
+                        console.log(ans);
+                        if (ans == "success")
+                        {
+                            location.href = "bill.html";
+                        }
+                    }
+                };
+                xhttp.open("POST", "/billing", true);
+                xhttp.send(formdata);
+            }
+            function getCartData(id, name, price)
+            {
+                var form = new FormData();
+                form.append("user_id", user_id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+
+                        var mainobj = JSON.parse(ans);
+                        var arr = mainobj["ans"];
+
+                        if (arr.length === 0)
+                        {
+                            document.getElementById("addd"+id).innerHTML = "<button class=\"btn btn-light\" style=\"border-radius: 0px;border:2px solid #3CB815;color:#3CB815\" id='add_btn' onclick='addToCart(" + id + ",\"" + name + "\"," + price + ")'>Add</button>";
+
+                        } else
+                        {
+                            for (var i = 0; i < arr.length; i++)
+                            {
+                                var obj = arr[i];
+
+                                if (id === obj.item_id)
+                                {
+                                    var ans = "<button class=\"btn btn-dark rounded\" style=\"border-radius: 0px;font-weight:bold\" id='add_btn' onclick='deleteFromCart(" + id + ",\"" + name + "\"," + price + ")'> - </button>";
+                                    ans += "<span style=\"border-radius: 0px;color:#3CB815;font-weight:bold;\"> " + obj.quantity + " </span>";
+                                    ans += "<button class=\"btn btn-dark rounded\" style=\"border-radius: 0px;font-weight:bold\" id='add_btn' onclick='addToCart(" + id + ",\"" + name + "\"," + price + ")'> + </button>";
+                                    document.getElementById("addd"+id).innerHTML = ans;
+                                }
+                            }
+
+                        }
+                    }
+                };
+                xml.open("POST", "/getCartData", true);
+                xml.send(form);
+            }
+
+            function showCartData()
+            {
+                var form = new FormData();
+                form.append("user_id", user_id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+
+                        var mainobj = JSON.parse(ans);
+                        var arr = mainobj["ans"];
+
+                        if (arr.length === 0)
+                        {
+                            var ans = "<h1 style='color:#7e808c;font-weight: 500'>Cart Empty</h1>\n" +
+                                    "                        <img src='img/empty_cart.jpg' style=\"width: 100%\"/>";
+                            document.getElementById("cart_rendering").innerHTML = ans;
+                        } else
+                        {
+                            var total = 0;
+                            var res = "<h1 style='color:#7e808c;font-weight: 500'>My Cart</h1>";
+                            res += "<table class=\"table table-bordered\">\n" +
+                                    "            <thead>\n" +
+                                    "                <tr>\n" +
+                                    "                    <th scope=\"col\">Item</th>\n" +
+                                    "                    <th scope=\"col\">Quantity</th>\n" +
+                                    "                    <th scope=\"col\">Price</th>\n" +
+                                    "                </tr>";
+                            res += "</thead>";
+                            res += "<tbody>";
+                            for (var i = 0; i < arr.length; i++)
+                            {
+                                var obj = arr[i];
+                                res += "<tr>\n" +
+                                        "                    <td scope=\"row\">" + obj.item_name + "</th>\n" +
+                                        "                    <td>" + obj.quantity + "</td>\n" +
+                                        "                    <td>" + obj.subtotal + "</td>\n" +
+                                        "                </tr>";
+                                total += parseFloat(obj.subtotal);
+
+
+
+                            }
+                            //5% delivery charges
+                            var delivery = total * 0.05;
+                            del = delivery;
+                            localStorage.setItem("delivery",delivery);
+                            res += "<tr>\n" +
+                                    "                    <th scope=\"row\" colspan=\"2\">Subtotal</th>\n" +
+                                    "                    <td>" + total + "</td>\n" +
+                                    "                </tr>";
+                            res += "<tr>\n" +
+                                    "                    <th scope=\"row\" colspan=\"2\">Delivery Charges</th>\n" +
+                                    "                    <td>" + delivery + "</td>\n" +
+                                    "                </tr>";
+                            res += "<tr>\n" +
+                                    "                    <th scope=\"row\" colspan=\"2\">Total Amount</th>\n" +
+                                    "                    <td>" + (total+delivery) + "</td>\n" +
+                                    "                </tr>";
+                            
+                            res += "</tbody>";
+                            res += "</table>";
+                            localStorage.setItem("total_amount", total);
+                            res += "<input type=\"button\" id=\"checkout\" value=\"CHECKOUT\" class=\"btn btn-primary btn-lg btn-block\" onclick=\"checkout()\">";
+                            document.getElementById("cart_rendering").innerHTML = res;
+
+                        }
+                    }
+                };
+                xml.open("POST", "/getCartData", true);
+                xml.send(form);
+            }
+
+
+            function addToCart(item_id, name, price)
+            {
+                var formdata = new FormData();
+                formdata.append("item_name", name);
+                formdata.append("restaurant_id", id);
+                formdata.append("item_id", item_id);
+                formdata.append("item_price", price);
+                formdata.append("user_id", user_id);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        var ans = this.responseText;
+                        console.log(ans);
+                        if (ans == "success")
+                        {
+                            location.reload();
+                        } else if (ans == "empty")
+                        {
+                            location.reload();
+                        }
+                    }
+                };
+                xhttp.open("POST", "/addToCart", true);
+                xhttp.send(formdata);
+            }
+
+            function deleteFromCart(item_id, name, price)
+            {
+                var formdata = new FormData();
+                formdata.append("item_name", name);
+                formdata.append("restaurant_id", id);
+                formdata.append("item_id", item_id);
+                formdata.append("item_price", price);
+                formdata.append("user_id", user_id);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        var ans = this.responseText;
+                        console.log(ans);
+                        if (ans == "success")
+                        {
+                            location.reload();
+                        } else if (ans == "empty")
+                        {
+                            location.reload();
+                        }
+                    }
+                };
+                xhttp.open("POST", "/deleteFromCart", true);
+                xhttp.send(formdata);
+            }
+
+            function category()
+            {
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var cuisines = "<div class=\"col-lg-1 col-md-2 col-sm-2 col-3\" style='display:flex;align-items:center'>";
+                        "   <h5>All items</h5>";
+                        "</div>";
+                        for (var i = 0; i < object.length; i++)
+                        {
+                            var obj = object[i];
+                            cuisines += "<div class=\"col-lg-1 col-md-2 col-sm-2 col-3\">";
+                            "    <img src=\"../" + obj.cuisines_image + "\" style='width:100%' alt=\"img\"/>";
+                            "</div>";
+                        }
+                        document.getElementById("pc").innerHTML = cuisines;
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/category", true);
+                //step 3
+                xml.send();
+            }
+
+            function showItemById()
+            {
+                var form = new FormData();
+                form.append("id", id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var ans = "";
+                        for (var i = 0; i < object.length; i++)
+                        {
+                            var obj = object[i];
+                            console.log(obj);
+                            getCartData(obj.id, obj.item_name, obj.price);
+                            ans += "<div class='row justify-content-center p-3 mt-5 ms-5 bg-light' style=\" border-bottom: 2px solid grey;\">";
+                            ans += "                    <div class=\"col-md-9\">";
+                            if (obj.category === "veg")
+                            {
+                                ans += "         <img src=\"../img/veg.png\" alt=\"loading\" style=\"height:30px\"/>";
+                            } else
+                            {
+                                ans += "                        <img src=\"../img/nonveg.png\" alt=\"loading\" style=\"height:30px\"/>";
+                            }
+                            ans += "                        <h3>" + obj.item_name + "</h3>";
+                            ans += "                        &#8377;<span>" + obj.price + "</span>";
+                            ans += "                        <p style=\"color:rgba(40,44,63,.45); \">" + obj.item_description + "</p>";
+                            ans += "<div id='addd"+obj.id+"'>";
+                            ans += "                        <button class=\"btn btn-light\" style=\"border-radius: 0px;border:2px solid #3CB815;color:#3CB815\" id='add_btn' onclick='addToCart(" + obj.id + ",\"" + obj.item_name + "\"," + obj.price + ")'>Add</button>";
+                            ans += "                    </div>";
+                            ans += "                    </div>";
+                            ans += "                    <div class=\"col-md-3 text-end\">";
+                            ans += "                        <img src=\".." + obj.item_image + "\" style=\"width:100%;height:75%;border-radius:10px;margin:5px;padding:0px;\" style='display:flex;align-items:center'/>";
+                            ans += "                    </div>";
+                            ans += "                </div>";
+                        }
+                        document.getElementById("item_list").innerHTML = ans;
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/showItemById", true);
+                //step 3
+                xml.send(form);
+            }
+
+
+
+            function go()
+            {
+                var form = new FormData();
+                form.append("id", id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    if (xml.readyState == 4 && xml.status == 200)
+                    {
+                        var ans = xml.responseText;
+
+                        var mainobj = JSON.parse(ans);
+                        var object = mainobj["ans"];
+                        var obj = object[0];
+                        console.log(obj);
+                      
+                        
+                        if (obj.restaurant_name === null)
+                        {
+                            history.back();
+
+                        }
+                        if (obj.photo !== null)
+                        {
+                            document.getElementById("image").src = ".." + obj.photo;
+                        }
+                        if (obj.restaurant_name !== null)
+                        {
+                            document.getElementById("name").innerHTML = obj.restaurant_name;
+
+                        }
+                        if (obj.address !== null)
+                        {
+                            document.getElementById("address").innerHTML = obj.address;
+
+                        }
+                        if (obj.description !== null)
+                        {
+                            document.getElementById("description").innerHTML = obj.description;
+                        }
+                        if (obj.rating !== null)
+                        {
+                            document.getElementById("rating").innerHTML = obj.rating;
+                        }
+                        if (obj.delivery_starts !== null)
+                        {
+                            document.getElementById("delivery_starts").innerHTML = obj.delivery_starts.slice(0, 5);
+                        }
+                        if (obj.delivery_ends !== null)
+                        {
+                            document.getElementById("delivery_ends").innerHTML = obj.delivery_ends.slice(0, 5);
+                        }
+                        rest_name = obj.restaurant_name;
+                        rest_mobile = obj.mobile;
+                        rest_address  = obj.address;
+                        console.log(obj.current_status);
+                        document.getElementById("open").innerHTML = obj.current_status;
+                        document.getElementById("minprice").innerHTML = obj.min_order_delivery;
+
+                    }
+                };
+
+                //6step 2
+                xml.open("POST", "/five", true);
+                //step 3
+                xml.send(form);
+                category();
+                showItemById();
+                showCartData();
+            }
+            
+        </script>
+    </head>
+    <body onload="go()">
+        <div id="header">
+
+
+            <div class="container py-3 px-5">
+                <div class="row align-items-center m-3" style="width:100%">
+                    <div class="col-lg-3">                        
+                        <img src=" ../uploads/images/RKFoodPlaza.jpg" id="image" class="w-100"/>
+                    </div>
+                    <div class="col-lg-6 m-2 mt-2" style="color:#fff;">
+                        <h2 id="name">-</h2>
+                        <div>
+                            <div class="addr" id="description" data-bs-toggle="modal" data-bs-target="#description3">
+                                -
+                            </div>
+                            <div class="addr" id="address">
+                                -
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div>
+                                        <span><span><i class="fa fa-star" aria-hidden="true"></i></span> <span id="rating">-</span></span>
+                                    </div>
+                                    <div class="addr">
+                                        <span>Overall Rating</span>
+                                    </div>
+                                </div>
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div>
+                                        <span><span><i class="fa fa-clock-o" aria-hidden="true"></i></span> <span id="delivery_starts">00:00</span> - <span id="delivery_ends">00:00</span></span>
+                                    </div>
+                                    <div class="addr">Daily Timing</div>
+                                </div>
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div data-bs-toggle="modal" data-bs-target="#openclose">
+                                        <span id="open">-</span>
+                                    </div>
+                                    <div class="addr">For Delivery</div>
+                                </div>
+                                <div class="col-3" style="border-right:1px solid hsla(0,0%,100%,.2);">
+                                    <div>
+                                        <span><span>₹ <span id="minprice"></span></span>
+                                    </div>
+                                    <div class="addr">
+                                        <span>Minimum Order for two</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="mt-5">
+            <div class="text-center">
+                <h3>Popular Cuisines</h3>
+                <hr>
+                <div class="row text-center justify-content-center" id="pc"></div>
+            </div> 
+            <div class='row m-4 mt-5'>
+                <div class=' col-md-7 mx-5' id='item_list'>
+                    <h3 class='text-center'>Items not available</h3>
+                </div>
+                <div id='cart' class='mx-5 col-md-3 text-center'>
+                    <div id="cart_rendering">
+                        <h1 style='color:#7e808c;font-weight: 500'>Cart Empty</h1>
+                        <img src='img/empty_cart.jpg' style="width: 100%"/>
+                    </div>
+                    <p style='color:#7e808c;text-align: left' class="mt-3">Good food is always cooking! Go ahead, order some yummy items from the menu.</p>
+                </div>
+            </div>
+        </div>
+
+         
+
+    </body>
+
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <script src="../bootstrap-5.0.2-dist/js/bootstrap.js" type="text/javascript"></script>
+        <link href="../bootstrap-5.0.2-dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+        <!--        <link href="../bootstrap-5.0.2-dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>-->
+
+        <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="homepage.css" rel="stylesheet" type="text/css"/>
+        <!--faq designing-->
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+            .faq{
+
+                font-family: 'Poppins', sans-serif;
+                background: #fff;
+                padding:30px;
+                margin-bottom: 100px;
+                border-radius: 20px;
+            }
+
+
+            .accordion .accordion-item {
+                border:none;
+                border-bottom: 1px solid #e5e5e5 !important;
+            }
+            .accordion .accordion-item button[aria-expanded='true'] {
+                border-bottom: 1px solid #03b5d2;
+            }
+
+            .accordion button {
+                position: relative;
+                display: block;
+                text-align: left;
+                width: 100%;
+                padding: 1em 0;
+                color: #7288a2;
+                font-size: 1.15rem;
+                font-weight: 400;
+                border: none;
+                background: none;
+                outline: none;
+                background-color: transparent
+            }
+            .accordion button:hover,
+            .accordion button:focus {
+                cursor: pointer;
+                color: #03b5d2;
+            }
+            .accordion button:hover::after,
+            .accordion button:focus::after {
+                cursor: pointer;
+                color: #03b5d2;
+                border: 1px solid #03b5d2;
+            }
+            .accordion button .accordion-title {
+                padding: 1em 1.5em 1em 0;
+            }
+            .accordion button .icon {
+                display: inline-block;
+                position: absolute;
+                top: 18px;
+                right: 0;
+                width: 22px;
+                height: 22px;
+                /*border: 1px solid;*/
+                border-radius: 22px;
+            }
+            .accordion button .icon::before {
+                display: block;
+                position: absolute;
+                content: '';
+                top: 9px;
+                left: 5px;
+                width: 10px;
+                height: 2px;
+                background: currentColor;
+            }
+            .accordion button .icon::after {
+                display: block;
+                position: absolute;
+                content: '';
+                top: 5px;
+                left: 9px;
+                width: 2px;
+                height: 10px;
+                background: currentColor;
+            }
+            .accordion button[aria-expanded='true'] {
+                color: #03b5d2;
+            }
+            .accordion button[aria-expanded='true'] .icon::after {
+                width: 0;
+            }
+            .accordion button[aria-expanded='true'] + .accordion-content {
+                opacity: 1;
+                max-height: 15em;
+                transition: all 200ms linear;
+                will-change: opacity, max-height;
+            }
+            .accordion .accordion-content {
+                opacity: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: opacity 200ms linear, max-height 200ms linear;
+                will-change: opacity, max-height;
+                text-align: left
+            }
+            .accordion .accordion-content p {
+                font-size: 1rem;
+                font-weight: 300;
+                margin: 2em 0;
+                text-align: left;
+            }
+
+        </style>
+        <script>
+            function go()
+            {
+                var formdata = new FormData();
+                localStorage.setItem("riderEmail", document.getElementById("email").value);
+                formdata.append("email", document.getElementById("email").value);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function ()
+                {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        alert(this.responseText);
+                    }
+                };
+                xhttp.open("Post", "/riderEmail", true);
+                xhttp.send(formdata);
+            }
+
+        </script>
+
+    </head>
+    <body style="background-color:#fff0d9; ">
+        <div class="m-0" style="background:rgba(0,0,0,0.85)">
+            <div class="row m-0">
+                <div class="col-6 p-5 m-0">
+                    <h1 class="fw-bold text-white p-3">F<span class="text-secondary">oo</span>die<span class="text-secondary">go</span></h1>
+                </div>
+                <div class="col-6 text-end p-5">
+                    <span class="text-secondary"><a href="#faq" class="text-white fw-bold">Need help?</a> Contact Us: +91-7009725940  | </span><a href="#faq" class="text-white fw-bold">FAQs</a>
+                </div>
+            </div>
+            <div class="row" style="width:100%">
+                <div class="col-lg-6 col-xs-12 col-md-6 p-5 m-0">
+
+                    <h1 class="text-white p-3 heading-text" style="font-family: Roboto; font-size: 8vh;">
+                        Join one of the India's Largest delivery platform!
+                    </h1>
+                </div>
+                <div class="col-lg-6 col-xs-12 col-md-6 p-5">
+                    <div class="card " style="border-radius:20px;background-color: rgba(1,1,1,0.5)">
+                        <div class="m-2 text-center">
+                            <h1 style="text-align: center;color: #8fd2eb;">Register Now</h1>
+                            <div class="form-floating m-5">
+                                <input type="email" class="form-control " id="email" placeholder="Enter your email" name="email">                      
+                                <label for="email" class="text-dark">Email</label> 
+                            </div>
+                            <input class="btn btn-outline-info mb-3" onclick="go()" value="VERIFY"/>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container mt-5">
+
+            <div class='row d-none d-md-flex'>
+                <div class='col-sm-3 text-center '>
+                    <img src="img1.png" style="width:50%"/>
+                    <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;margin-top: 10px;">
+                        Regular payout with exciting bonuses & Incentives
+                    </p>
+                </div>
+                <div class='col-sm-3 text-center '>
+                    <img src="img2.png" style="width:50%"/>
+                    <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;margin-top: 10px;">
+                        Flexibility to work in your choice of shift
+                    </p>
+                </div>
+                <div class='col-sm-3 text-center'>
+                    <img src="img3.png" style="width:50%"/>
+                    <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;margin-top: 10px;">
+                        Insurance of Rs 12 Lac for you and your family
+                    </p>
+                </div>
+                <div class='col-sm-3 text-center'>
+                    <img src="img4.png" style="width:50%"/>
+                    <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;margin-top: 10px;">
+                        Maternity and period leave for women partners
+                    </p>
+                </div>                
+            </div>
+
+            <div id="carouselExampleDark" class="carousel carousel-dark slide text-center d-md-none" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active" data-bs-interval="10000">                  
+                        <img src="img1.png" style="width:50%"/>
+                        <div class="p-5">
+                            <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;">
+                                Regular payout with exciting bonuses & Incentives
+                            </p>
+                        </div>
+                    </div>
+                    <div class="carousel-item" data-bs-interval="2000">
+                        <img src="img2.png" style="width:50%"/>
+                        <div class="p-5">
+                            <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;">
+                                Flexibility to work in your choice of shift
+                            </p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="img3.png" style="width:50%"/>
+                        <div class="p-5">
+                            <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;">
+                                Insurance of Rs 12 Lac for you and your family
+                            </p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="img4.png" style="width:50%"/>
+                        <div class="p-5" >
+                            <p style="font-weight: 500;font-style: normal;font-size: 2.92326431181486vh;line-height: 3.89768574908648vh;letter-spacing: 0.01em;color: #0A1422;">
+                                Maternity and period leave for women partners
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+        <section class="mt-5" style="padding: 20px;background: rgba(230, 195, 255, 0.7);">
+            <div class="row">
+                <div class="col-sm-6  text-center p-5">
+                    <img src="bg.png" style="width:100%"/>
+                </div>
+                <div class="col-sm-6 p-5 align-items-center">
+                    <h2 class="text-secondary my-5">Get started in 3 easy steps</h2>
+                    <ol style="color: rgba(2, 6, 12, 0.6);font-size: 1.5rem;font-weight: 500" class='mt-5'>
+                        <li><span class="mt-5">Go to ride with us on the footer of www.foodiego.com</span></li>
+                        <li><span class="mt-5">Fill in details and documents</span></li>
+                        <li><span class="mt-5">Collect bag and t-shirt</span></li>
+                    </ol>
+                </div>
+
+
+            </div>
+
+        </section>
+
+        <section class="text-center mt-5 faq container" id="faq">
+            <h2 style="margin-bottom:20px;">Frequently Asked Questions</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button id="accordion-button-1" aria-expanded="false">
+                        <span class="accordion-title">How can I become a delivery partner with FoodieGo?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                        <ol>
+                            <li><span >Go to ride with us on the footer of www.foodiego.com</span></li>
+                            <li><span >Fill in details and documents</span></li>
+                            <li><span >Collect bag and t-shirt</span></li>
+                        </ol></p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button id="accordion-button-2" aria-expanded="false">
+                        <span class="accordion-title">What documents and details do I need to join FoodieGo?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            You need the following documents. In case you don’t have any of these documents, don’t worry - you can share them later. Aadhar Card or Voter Card PAN Card Driving licence (not needed for cycle) Bank details.
+                        </p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button id="accordion-button-3" aria-expanded="false">
+                        <span class="accordion-title">Is there any joining fees to become FoodieGo as a delivery partner?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            Is there any joining fees to become Swiggy as a delivery partner? No, there is no fee to join Swiggy. You can download the app and start the joining process for free.
+                        </p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button id="accordion-button-4" aria-expanded="false">
+                        <span class="accordion-title">What are working hours for a delivery partner at FoodieGo?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            FoodieGo offers complete flexibility to choose your shifts. You can become a part-time or a full-time delivery partner based on your preference.
+                        </p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button id="accordion-button-5" aria-expanded="false">
+                        <span class="accordion-title">I don’t have any vehicle. Can I still become a delivery partner?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            Yes, You can rent a bike/e-bike/cycle for deliveries. FoodieGo may also be able to help you connect with vendors to make the vehicle available. Please reach out to your nearest onboarding centre for more details.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button id="accordion-button-6" aria-expanded="false">
+                        <span class="accordion-title">How much can I earn with FoodieGo?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            Your earning on FoodieGo depends upon your city and the number of orders you deliver. Download the app, and fill in your details to understand how much you can earn.
+                        </p>
+                    </div>
+                </div><!-- comment -->
+                <div class="accordion-item">
+                    <button id="accordion-button-7" aria-expanded="false">
+                        <span class="accordion-title">What all orders will I deliver with FoodieGo?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            With FoodieGo, you can earn more by delivering Food, Instamart, Genie and other orders from FoodieGo with the same ID.
+                        </p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button id="accordion-button-8" aria-expanded="false">
+                        <span class="accordion-title">When and How will I be paid by FoodieGo?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            FoodieGo will transfer your earnings every week directly into your bank account.
+                        </p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button id="accordion-button-9" aria-expanded="false">
+                        <span class="accordion-title">What are other benefits of joining FoodieGo?</span>
+                        <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>
+                            FoodieGo provides best in-class insurance of up to Rs 12 lakhs for you and your family, skills development program for you and your children , easy personal loans, vehicle maintenance support and many more benefits. Download the app and join FoodieGo to avail these benefits.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>            
+
+
+        <script>
+            const items = document.querySelectorAll('.accordion button');
+
+            function toggleAccordion() {
+                const itemToggle = this.getAttribute('aria-expanded');
+
+                for (i = 0; i < items.length; i++) {
+                    items[i].setAttribute('aria-expanded', 'false');
+                }
+
+                if (itemToggle == 'false') {
+                    this.setAttribute('aria-expanded', 'true');
+                }
+            }
+
+
+            items.forEach((item) => item.addEventListener('click', toggleAccordion));
+        </script>
+    </body>
+</html>

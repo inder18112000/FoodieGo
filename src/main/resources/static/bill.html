@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Libraries Stylesheet -->
+        <link href="lib/animate/animate.min.css" rel="stylesheet">
+        <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+        <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet"/> 
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+            var res;
+            var user_id = localStorage.getItem("user_id");
+            var bill_id;
+
+            function add()
+            {
+                var form = new FormData();
+                form.append("user_id", user_id);
+                form.append("bid", bill_id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    var ans = this.responseText;
+                    console.log("ADD: " + ans);
+                    location.href = "payment_success.html";
+                    
+                };
+                xml.open("POST", "/add", true);
+                xml.send(form);
+            }
+
+            function addAddress()
+            {
+                var address = document.getElementById("address").value;
+                if (address ==="" || address === null)
+                {
+                    alert("Please enter your address");
+                } else
+                {
+                    var form = new FormData();
+                    form.append("id", user_id);
+                    form.append("address", address);
+                    var xml = new XMLHttpRequest();
+                    //step4
+                    xml.onreadystatechange = function ()
+                    {
+                        var ans = this.responseText;
+                        console.log(ans);
+                        pay();
+                    };
+                    xml.open("POST", "/addAddress", true);
+                    xml.send(form);
+
+                }
+
+            }
+            function pay()
+            {
+                var options = {
+//                  rzp_live_6R4RfSxoYaN6a7
+//rzp_test_96HeaVmgRvbrfT
+
+                    "key": "rzp_test_96HeaVmgRvbrfT", // Enter the Key ID generated from the Dashboard
+                    "amount": total * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise or INR 500.
+                    "currency": "INR",
+                    "name": "FoodieGo",
+                    "description": "Test Booking",
+                    "image": "img/icon.ico",
+                    "handler": function (response) {
+//                    alert(response);
+//                    alert(response.razorpay_payment_id );          
+                        add();
+                    },
+                    "prefill": {
+                        "name": "test", "email": "foodiego.inderjit@gmail.com",
+                        "contact": "7009725940"
+                    },
+                    "notes": {
+                        "address": ""
+                    }
+                    ,
+                    "theme": {
+                        "color": "#3CB815"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                document.getElementById('btn7').onclick = function (e) {
+                    rzp1.open();
+                    e.preventDefault();
+                };
+            }
+
+            var total;
+            function getBillDetails()
+            {
+                var currentDate = new Date().toJSON().slice(0, 10);
+                console.log(currentDate);
+                var form = new FormData();
+                form.append("user_id", user_id);
+                var xml = new XMLHttpRequest();
+                //step4
+                xml.onreadystatechange = function ()
+                {
+                    var a = this.responseText;
+                    console.log(a);
+                    var mainobj = JSON.parse(a);
+                    var arr = mainobj["ans"];
+                    var obj = arr[arr.length-1];
+                    document.getElementById("total_bill_amount").innerHTML = obj.total_bill_amount;
+                    total = obj.total_bill_amount;
+                    document.getElementById("date").innerHTML = obj.date;
+                    document.getElementById("restaurant_id").innerHTML = obj.restaurant_id;
+                    document.getElementById("bill_id").innerHTML = obj.bid;
+                    bill_id = obj.bid;
+
+                };
+                xml.open("POST", "/getBillDetails", true);
+                xml.send(form);
+            }
+
+
+        </script>
+    </head>
+    <body onload="getBillDetails()">
+        <div class="container text-center mt-5">
+            <h1 class="fw-bold text-primary m-0">F<span class="text-secondary">oo</span>die<span class="text-secondary">go</span></h1>
+
+            <div class="text-end mt-5">
+                Bill Number: <span id="bill_id"></span>
+                <table class="table text-start table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Fields</th>
+                            <th scope="col">Detail</th>                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" >Total Bill Amount</th>
+                            <td id="total_bill_amount"></td>
+
+                        </tr>
+                        <tr>
+                            <th scope="row">Restaurant Id</th>
+                            <td id="restaurant_id"></td>
+
+                        </tr>
+                        <tr>
+                            <th scope="row">Date</th>
+                            <td id="date"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div  style="font-size: 36px;margin-top: 50px">
+                <i class='bx bxs-location-plus' ></i>
+            </div>
+
+            <h2 >Add your address</h2>
+            <div class="form-floating m-5">
+                <textarea class="form-control" id="address" name="address" placeholder="Enter Address Here..."></textarea>
+                <label for="address">Address</label> 
+            </div>
+            <input type="button" id="btn7" value="Proceed to payment" class="btn btn-primary text-white btn-lg btn-block" style="border-radius: 10px;" onclick="addAddress()">
+
+        </div>
+
+    </body>
+</html>
